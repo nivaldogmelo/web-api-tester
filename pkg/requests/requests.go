@@ -26,3 +26,17 @@ func GetAll() ([]root.Request, error) {
 
 	return requests, nil
 }
+
+func GetOne(name string) (root.Request, error) {
+	var request root.Request
+
+	request, err := sqlite.GetOneRequest(name)
+	if err != nil {
+		log.Println("Error getting request")
+		return request, err
+	}
+
+	log.Println(request)
+
+	return request, nil
+}

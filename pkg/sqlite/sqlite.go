@@ -96,3 +96,41 @@ func GetAllRequests() ([]root.Request, error) {
 
 	return request, nil
 }
+
+func GetOneRequest(name string) (root.Request, error) {
+	var request root.Request
+
+	database, err := sql.Open("sqlite3", "config/database.db")
+	defer database.Close()
+	if err != nil {
+		log.Println("Error opening sqlite instance")
+		return request, err
+	}
+
+	row := database.QueryRow("SELECT method, headers, body FROM requests WHERE name='" + name)
+	if err != nil {
+		log.Println("Error getting request from database")
+		return request, err
+	}
+
+	var method string
+	var headers string
+	var body string
+
+	err = row.Scan(&method, &headers, &body)
+	if err != nil {
+		log.Println("No request found")
+	}
+
+	var header []root.Header
+	err = json.Unmarshal([]byte(headers), &header)
+
+	request = root.Request{
+		Name:    name,
+		Method:  method,
+		Headers: header,
+		Body:    body,
+	}
+
+	return request, nil
+}

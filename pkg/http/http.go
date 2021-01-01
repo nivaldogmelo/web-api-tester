@@ -22,8 +22,7 @@ func respondWithJson(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	respondWithJson(w, http.StatusOK, "Hello World\n")
-	// fmt.Fprint(w, "Hello World\n")
+	respondWithJson(w, http.StatusOK, "Hello World")
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,11 +51,23 @@ func getAllHandler(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusCreated, content)
 }
 
+func getOneHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	params := mux.Vars(r)
+
+	content, err := requests.GetOne(params["name"])
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+	}
+	respondWithJson(w, http.StatusCreated, content)
+}
+
 func Serve(port string) {
 	r := mux.NewRouter()
-	r.HandleFunc("/", homeHandler).Methods("GET")
+	r.HandleFunc("/", getAllHandler).Methods("GET")
 	r.HandleFunc("/", saveHandler).Methods("POST")
-	r.HandleFunc("/requests", getAllHandler).Methods("GET")
+	r.HandleFunc("/{name}", getOneHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(port, r))
 }
