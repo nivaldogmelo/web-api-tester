@@ -38,7 +38,7 @@ func GetOne(id string) (root.Request, error) {
 
 	request, err := sqlite.GetOneRequest(id)
 	if err != nil {
-		error_handler.Print(errors.New("Error getting requests"))
+		error_handler.Print(errors.New("Error getting request"))
 		return request, err
 	}
 
