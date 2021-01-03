@@ -3,27 +3,30 @@ package sqlite
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
+	"errors"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
+	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
 )
 
 func InitDB() error {
 	database, err := sql.Open("sqlite3", "config/database.db")
 	defer database.Close()
 	if err != nil {
-		log.Println("Error opening sqlite instance")
+		error_handler.Print(errors.New("Error opening database instance"))
 		return err
 	}
 
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT)")
 	if err != nil {
+		error_handler.Print(errors.New("Error preparing database query"))
 		return err
 	}
 
 	_, err = statement.Exec()
 	if err != nil {
+		error_handler.Print(errors.New("Error executing database query"))
 		return err
 	}
 
@@ -34,24 +37,25 @@ func InsertRequest(request root.Request) error {
 	database, err := sql.Open("sqlite3", "config/database.db")
 	defer database.Close()
 	if err != nil {
-		log.Println("Error opening sqlite instance")
+		error_handler.Print(errors.New("Error opening database instance"))
 		return err
 	}
 
 	statement, err := database.Prepare("INSERT INTO requests (name, method, headers, body) VALUES (?, ?, ?, ?)")
 	if err != nil {
-		log.Println("Error inserting new request")
+		error_handler.Print(errors.New("Error inserting new request in database"))
 		return err
 	}
 
 	header, err := json.Marshal(request.Headers)
 	if err != nil {
-		log.Fatal(err)
+		error_handler.Print(errors.New("Error parsing JSON from headers"))
+		return err
 	}
 
 	_, err = statement.Exec(request.Name, request.Method, header, request.Body)
 	if err != nil {
-		log.Println(err)
+		error_handler.Print(errors.New("Error executing database query"))
 		return err
 	}
 
@@ -62,13 +66,13 @@ func GetAllRequests() ([]root.Request, error) {
 	database, err := sql.Open("sqlite3", "config/database.db")
 	defer database.Close()
 	if err != nil {
-		log.Println("Error opening sqlite instance")
+		error_handler.Print(errors.New("Error opening database instance"))
 		return nil, err
 	}
 
 	rows, err := database.Query("SELECT * FROM requests")
 	if err != nil {
-		log.Println("Error getting requests from database")
+		error_handler.Print(errors.New("Error getting requests from database"))
 		return nil, err
 	}
 
@@ -103,13 +107,13 @@ func GetOneRequest(name string) (root.Request, error) {
 	database, err := sql.Open("sqlite3", "config/database.db")
 	defer database.Close()
 	if err != nil {
-		log.Println("Error opening sqlite instance")
+		error_handler.Print(errors.New("Error opening database instance"))
 		return request, err
 	}
 
 	row := database.QueryRow("SELECT method, headers, body FROM requests WHERE name='" + name)
 	if err != nil {
-		log.Println("Error getting request from database")
+		error_handler.Print(errors.New("Error getting request from database"))
 		return request, err
 	}
 
@@ -119,7 +123,7 @@ func GetOneRequest(name string) (root.Request, error) {
 
 	err = row.Scan(&method, &headers, &body)
 	if err != nil {
-		log.Println("No request found")
+		return request, err
 	}
 
 	var header []root.Header

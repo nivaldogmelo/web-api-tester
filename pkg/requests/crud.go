@@ -1,16 +1,17 @@
 package requests
 
 import (
-	"log"
+	"errors"
 
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
+	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
 	"github.com/nivaldogmelo/web-api-tester/pkg/sqlite"
 )
 
 func Save(request root.Request) error {
 	err := sqlite.InsertRequest(request)
 	if err != nil {
-		log.Println("Error saving request")
+		error_handler.Print(errors.New("Error saving request"))
 		return err
 	}
 
@@ -20,7 +21,7 @@ func Save(request root.Request) error {
 func GetAll() ([]root.Request, error) {
 	requests, err := sqlite.GetAllRequests()
 	if err != nil {
-		log.Println("Error getting requests")
+		error_handler.Print(errors.New("Error gettings requests"))
 		return nil, err
 	}
 
@@ -32,7 +33,7 @@ func GetOne(name string) (root.Request, error) {
 
 	request, err := sqlite.GetOneRequest(name)
 	if err != nil {
-		log.Println("Error getting request")
+		error_handler.Print(errors.New("Error getting requests"))
 		return request, err
 	}
 
