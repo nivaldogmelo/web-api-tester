@@ -36,7 +36,5 @@ func GetOne(name string) (root.Request, error) {
 		return request, err
 	}
 
-	log.Println(request)
-
 	return request, nil
 }
