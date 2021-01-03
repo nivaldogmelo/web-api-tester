@@ -18,7 +18,7 @@ func InitDB() error {
 		return err
 	}
 
-	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT)")
+	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT, url TEXT)")
 	if err != nil {
 		error_handler.Print(errors.New("Error preparing database query"))
 		return err
@@ -41,7 +41,7 @@ func InsertRequest(request root.Request) error {
 		return err
 	}
 
-	statement, err := database.Prepare("INSERT INTO requests (name, method, headers, body) VALUES (?, ?, ?, ?)")
+	statement, err := database.Prepare("INSERT INTO requests (name, method, headers, body, url) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		error_handler.Print(errors.New("Error inserting new request in database"))
 		return err
@@ -53,7 +53,7 @@ func InsertRequest(request root.Request) error {
 		return err
 	}
 
-	_, err = statement.Exec(request.Name, request.Method, header, request.Body)
+	_, err = statement.Exec(request.Name, request.Method, header, request.Body, request.URL)
 	if err != nil {
 		error_handler.Print(errors.New("Error executing database query"))
 		return err
@@ -81,9 +81,11 @@ func GetAllRequests() ([]root.Request, error) {
 	var method string
 	var headers string
 	var body string
+	var url string
 	var request []root.Request
+
 	for rows.Next() {
-		rows.Scan(&id, &name, &method, &headers, &body)
+		rows.Scan(&id, &name, &method, &headers, &body, &url)
 
 		var header []root.Header
 		err = json.Unmarshal([]byte(headers), &header)
@@ -93,6 +95,7 @@ func GetAllRequests() ([]root.Request, error) {
 			Method:  method,
 			Headers: header,
 			Body:    body,
+			URL:     url,
 		}
 
 		request = append(request, temp)
@@ -111,7 +114,7 @@ func GetOneRequest(id string) (root.Request, error) {
 		return request, err
 	}
 
-	row := database.QueryRow("SELECT name, method, headers, body FROM requests WHERE id='" + id + "'")
+	row := database.QueryRow("SELECT name, method, headers, body, url FROM requests WHERE id='" + id + "'")
 	if err != nil {
 		error_handler.Print(errors.New("Error getting request from database"))
 		return request, err
@@ -121,8 +124,9 @@ func GetOneRequest(id string) (root.Request, error) {
 	var method string
 	var headers string
 	var body string
+	var url string
 
-	err = row.Scan(&name, &method, &headers, &body)
+	err = row.Scan(&name, &method, &headers, &body, &url)
 	if err != nil {
 		return request, err
 	}
@@ -135,6 +139,7 @@ func GetOneRequest(id string) (root.Request, error) {
 		Method:  method,
 		Headers: header,
 		Body:    body,
+		URL:     url,
 	}
 
 	return request, nil

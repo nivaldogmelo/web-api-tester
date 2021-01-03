@@ -10,4 +10,5 @@ type Request struct {
 	Method  string
 	Headers []Header
 	Body    string
+	URL     string
 }
