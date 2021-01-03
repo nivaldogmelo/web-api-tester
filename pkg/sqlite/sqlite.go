@@ -144,3 +144,44 @@ func GetOneRequest(id string) (root.Request, error) {
 
 	return request, nil
 }
+
+func GetRequestByField(field string, value string) ([]root.Request, error) {
+	database, err := sql.Open("sqlite3", "config/database.db")
+	defer database.Close()
+	if err != nil {
+		error_handler.Print(errors.New("Error opening database instance"))
+		return nil, err
+	}
+
+	rows, err := database.Query("SELECT name, method, headers, body, url FROM requests WHERE " + field + "='" + value + "'")
+	if err != nil {
+		error_handler.Print(errors.New("Error getting requests from database"))
+		return nil, err
+	}
+
+	var name string
+	var method string
+	var headers string
+	var body string
+	var url string
+	var request []root.Request
+
+	for rows.Next() {
+		rows.Scan(&name, &method, &headers, &body, &url)
+
+		var header []root.Header
+		err = json.Unmarshal([]byte(headers), &header)
+
+		temp := root.Request{
+			Name:    name,
+			Method:  method,
+			Headers: header,
+			Body:    body,
+			URL:     url,
+		}
+
+		request = append(request, temp)
+	}
+
+	return request, nil
+}

@@ -9,7 +9,12 @@ import (
 )
 
 func Save(request root.Request) error {
-	err := sqlite.InsertRequest(request)
+	err := checkIfDuplicated(request)
+	if err != nil {
+		return err
+	}
+
+	err = sqlite.InsertRequest(request)
 	if err != nil {
 		error_handler.Print(errors.New("Error saving request"))
 		return err
