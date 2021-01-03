@@ -101,7 +101,7 @@ func GetAllRequests() ([]root.Request, error) {
 	return request, nil
 }
 
-func GetOneRequest(name string) (root.Request, error) {
+func GetOneRequest(id string) (root.Request, error) {
 	var request root.Request
 
 	database, err := sql.Open("sqlite3", "config/database.db")
@@ -111,17 +111,18 @@ func GetOneRequest(name string) (root.Request, error) {
 		return request, err
 	}
 
-	row := database.QueryRow("SELECT method, headers, body FROM requests WHERE name='" + name)
+	row := database.QueryRow("SELECT name, method, headers, body FROM requests WHERE id='" + id + "'")
 	if err != nil {
 		error_handler.Print(errors.New("Error getting request from database"))
 		return request, err
 	}
 
+	var name string
 	var method string
 	var headers string
 	var body string
 
-	err = row.Scan(&method, &headers, &body)
+	err = row.Scan(&name, &method, &headers, &body)
 	if err != nil {
 		return request, err
 	}

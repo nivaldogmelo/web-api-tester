@@ -28,10 +28,10 @@ func GetAll() ([]root.Request, error) {
 	return requests, nil
 }
 
-func GetOne(name string) (root.Request, error) {
+func GetOne(id string) (root.Request, error) {
 	var request root.Request
 
-	request, err := sqlite.GetOneRequest(name)
+	request, err := sqlite.GetOneRequest(id)
 	if err != nil {
 		error_handler.Print(errors.New("Error getting requests"))
 		return request, err

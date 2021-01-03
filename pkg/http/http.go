@@ -55,7 +55,7 @@ func getOneHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	content, err := requests.GetOne(params["name"])
+	content, err := requests.GetOne(params["id"])
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
@@ -66,7 +66,7 @@ func Serve(port string) {
 	r := mux.NewRouter()
 	r.HandleFunc("/", getAllHandler).Methods("GET")
 	r.HandleFunc("/", saveHandler).Methods("POST")
-	r.HandleFunc("/{name}", getOneHandler).Methods("GET")
+	r.HandleFunc("/{id}", getOneHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(port, r))
 }
