@@ -37,6 +37,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	err := requests.Save(request)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	respondWithJson(w, http.StatusCreated, "Saved with Success")
@@ -46,6 +47,7 @@ func getAllHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := requests.GetAll()
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	respondWithJson(w, http.StatusCreated, content)
 }
@@ -58,6 +60,7 @@ func getOneHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := requests.GetOne(params["id"])
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 	respondWithJson(w, http.StatusCreated, content)
 }
