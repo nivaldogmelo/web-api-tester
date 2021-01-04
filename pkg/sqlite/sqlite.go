@@ -185,3 +185,26 @@ func GetRequestByField(field string, value string) ([]root.Request, error) {
 
 	return request, nil
 }
+
+func DeleteOneRequest(id string) error {
+	database, err := sql.Open("sqlite3", "config/database.db")
+	defer database.Close()
+	if err != nil {
+		error_handler.Print(errors.New("Error opening database instance"))
+		return err
+	}
+
+	statement, err := database.Prepare("DELETE FROM requests WHERE id=?")
+	if err != nil {
+		error_handler.Print(errors.New("Error preparing delete query"))
+		return err
+	}
+
+	_, err = statement.Exec(id)
+	if err != nil {
+		error_handler.Print(errors.New("Error deleting request from database"))
+		return err
+	}
+
+	return nil
+}

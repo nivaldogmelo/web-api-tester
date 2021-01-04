@@ -44,3 +44,13 @@ func GetOne(id string) (root.Request, error) {
 
 	return request, nil
 }
+
+func DeleteOne(id string) error {
+	err := sqlite.DeleteOneRequest(id)
+	if err != nil {
+		error_handler.Print(errors.New("Error deleting request"))
+		return err
+	}
+
+	return nil
+}

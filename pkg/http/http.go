@@ -43,6 +43,19 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 	respondWithJson(w, http.StatusCreated, "Saved with Success")
 }
 
+func deleteOneHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+
+	params := mux.Vars(r)
+
+	err := requests.DeleteOne(params["id"])
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJson(w, http.StatusCreated, "Request deleted with success")
+}
+
 func getAllHandler(w http.ResponseWriter, r *http.Request) {
 	content, err := requests.GetAll()
 	if err != nil {
@@ -70,6 +83,7 @@ func Serve(port string) {
 	r.HandleFunc("/", getAllHandler).Methods("GET")
 	r.HandleFunc("/", saveHandler).Methods("POST")
 	r.HandleFunc("/{id}", getOneHandler).Methods("GET")
+	r.HandleFunc("/{id}", deleteOneHandler).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(port, r))
 }
