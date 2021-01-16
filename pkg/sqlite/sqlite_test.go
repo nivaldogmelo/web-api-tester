@@ -190,7 +190,7 @@ func TestDeleteOneRequest(t *testing.T) {
 
 	_, expectedResult := sqlite.GetOneRequest("1")
 
-	assert.Equal(t, expectedResult.Error(), "sql: no rows in result set")
+	assert.Equal(t, "sql: no rows in result set", expectedResult.Error())
 
 	err = os.Remove("database.db")
 	if err != nil {
