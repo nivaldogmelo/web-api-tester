@@ -6,12 +6,36 @@ import (
 	"errors"
 
 	_ "github.com/mattn/go-sqlite3"
+	c "github.com/nivaldogmelo/web-api-tester/config"
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
 	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
+	"github.com/spf13/viper"
 )
 
+func getDB() (string, error) {
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetConfigType("yaml")
+
+	var config c.Config
+	if err := viper.ReadInConfig(); err != nil {
+		error_handler.Print(errors.New("Error reading config file, using default name"))
+		return "database.db", err
+	}
+
+	err := viper.Unmarshal(&config)
+	if err != nil {
+		error_handler.Print(errors.New("Error parsing config file using default name"))
+		return "database.db", err
+	}
+
+	return config.Database.Filename, nil
+}
+
 func InitDB() error {
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -34,7 +58,8 @@ func InitDB() error {
 }
 
 func InsertRequest(request root.Request) error {
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -63,7 +88,8 @@ func InsertRequest(request root.Request) error {
 }
 
 func GetAllRequests() ([]root.Request, error) {
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -107,7 +133,8 @@ func GetAllRequests() ([]root.Request, error) {
 func GetOneRequest(id string) (root.Request, error) {
 	var request root.Request
 
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -146,7 +173,8 @@ func GetOneRequest(id string) (root.Request, error) {
 }
 
 func GetRequestByField(field string, value string) ([]root.Request, error) {
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -187,7 +215,8 @@ func GetRequestByField(field string, value string) ([]root.Request, error) {
 }
 
 func DeleteOneRequest(id string) error {
-	database, err := sql.Open("sqlite3", "config/database.db")
+	dbFile, err := getDB()
+	database, err := sql.Open("sqlite3", dbFile)
 	defer database.Close()
 	if err != nil {
 		error_handler.Print(errors.New("Error opening database instance"))
@@ -200,9 +229,16 @@ func DeleteOneRequest(id string) error {
 		return err
 	}
 
-	_, err = statement.Exec(id)
+	result, err := statement.Exec(id)
 	if err != nil {
 		error_handler.Print(errors.New("Error deleting request from database"))
+		return err
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		err = errors.New("No request found")
+		error_handler.Print(err)
 		return err
 	}
 
