@@ -229,9 +229,16 @@ func DeleteOneRequest(id string) error {
 		return err
 	}
 
-	_, err = statement.Exec(id)
+	result, err := statement.Exec(id)
 	if err != nil {
 		error_handler.Print(errors.New("Error deleting request from database"))
+		return err
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		err = errors.New("No request found")
+		error_handler.Print(err)
 		return err
 	}
 
