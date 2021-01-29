@@ -47,8 +47,6 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteOneHandler(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	params := mux.Vars(r)
 
 	err := requests.DeleteOne(params["id"])
@@ -56,7 +54,7 @@ func deleteOneHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJson(w, http.StatusCreated, "Request deleted with success")
+	respondWithJson(w, http.StatusOK, "Request deleted with success")
 }
 
 func getAllHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,12 +63,10 @@ func getAllHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJson(w, http.StatusCreated, content)
+	respondWithJson(w, http.StatusOK, content)
 }
 
 func getOneHandler(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
 	params := mux.Vars(r)
 
 	content, err := requests.GetOne(params["id"])
@@ -78,7 +74,7 @@ func getOneHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	respondWithJson(w, http.StatusCreated, content)
+	respondWithJson(w, http.StatusOK, content)
 }
 
 func Serve(port string) {
