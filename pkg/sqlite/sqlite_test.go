@@ -93,31 +93,10 @@ func TestInsertRequests(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error opening test DB - %v", err)
 	}
-	row := database.QueryRow("SELECT name, method, headers, body, url FROM requests WHERE id='1'")
+
+	actualRequest, err := sqlite.GetOneRequest("1")
 	if err != nil {
-		t.Errorf("Error querying test DB - %v", err)
-	}
-
-	var name string
-	var method string
-	var headers string
-	var body string
-	var url string
-
-	err = row.Scan(&name, &method, &headers, &body, &url)
-	if err != nil {
-		t.Errorf("Error scaning test DB - %v", err)
-	}
-
-	var header []root.Header
-	err = json.Unmarshal([]byte(headers), &header)
-
-	actualRequest := root.Request{
-		Name:    name,
-		Method:  method,
-		Headers: header,
-		Body:    body,
-		URL:     url,
+		t.Errorf("Error getting request from DB - %v", err)
 	}
 
 	assert.Equal(t, expectedRequest, actualRequest)
