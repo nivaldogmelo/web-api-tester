@@ -5,7 +5,7 @@ import (
 	"log"
 
 	web "github.com/nivaldogmelo/web-api-tester/cmd"
-	c "github.com/nivaldogmelo/web-api-tester/config"
+	c "github.com/nivaldogmelo/web-api-tester/internal/config"
 	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
 	sqlite "github.com/nivaldogmelo/web-api-tester/pkg/sqlite"
 	"github.com/spf13/viper"

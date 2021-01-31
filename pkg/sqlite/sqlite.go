@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	_ "github.com/mattn/go-sqlite3"
-	c "github.com/nivaldogmelo/web-api-tester/config"
+	c "github.com/nivaldogmelo/web-api-tester/internal/config"
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
 	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
 	"github.com/spf13/viper"
