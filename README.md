@@ -20,7 +20,7 @@ database:
 
 Here how you config folder should look like:
 
-```console
+```bash
 ┌─[<user>@<machine>] - [~/web-api-tester]
 └─[$] <> ls
 config.yaml
@@ -32,7 +32,7 @@ To run the application you have two options.
 #### Local
 To run things locally you can just run
 
-```console
+```bash
 ┌─[<user>@<machine>] - [~/web-api-tester]
 └─[$] <> go build
 
@@ -43,20 +43,20 @@ To run things locally you can just run
 
 #### Docker
 To execute through docker first you'll need to execute the `build.sh` script to create the image:
-```console
+```bash
 ┌─[<user>@<machine>] - [~/web-api-tester]
 └─[$] <> ./build.sh
 ```
 
 Then you run the docker imagem mounting the config folder that you create at the step one
-```console
+```bash
 ┌─[<user>@<machine>] - [~/web-api-tester]
 └─[$] <> docker run -d -p <port>:<port> -v "$PWD"/config:/config --name <name> web-api-tester
 ```
 
 ## Test
 To test the application you can execute `test.sh` script at the root folder. Example
-```console
+```bash
 ┌─[<user>@<machine>] - [~/web-api-tester]
 └─[$] <> ./test.sh
 ```
