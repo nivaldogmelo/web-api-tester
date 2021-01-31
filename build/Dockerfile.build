@@ -11,6 +11,5 @@ RUN go build
 FROM alpine
 
 COPY --from=build /app/web-api-tester /
-# COPY --from=build /app/config.yaml /
 
 CMD ["./web-api-tester"]
