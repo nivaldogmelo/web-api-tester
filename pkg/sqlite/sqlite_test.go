@@ -50,7 +50,7 @@ func TestInitDB(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error initializing DB - %v", err)
 	}
-	actualDatabase, err := sql.Open("sqlite3", "database.db")
+	actualDatabase, err := sql.Open("sqlite3", "config/database.db")
 	defer actualDatabase.Close()
 	if err != nil {
 		t.Errorf("Error getting expected DB - %v", err)
@@ -71,7 +71,7 @@ func TestInitDB(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
@@ -88,7 +88,7 @@ func TestInsertRequests(t *testing.T) {
 		t.Errorf("Error inserting request at DB - %v", err)
 	}
 
-	database, err := sql.Open("sqlite3", "database.db")
+	database, err := sql.Open("sqlite3", "config/database.db")
 	defer database.Close()
 	if err != nil {
 		t.Errorf("Error opening test DB - %v", err)
@@ -101,14 +101,14 @@ func TestInsertRequests(t *testing.T) {
 
 	assert.Equal(t, expectedRequest, actualRequest)
 
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}
 }
 
 func TestGetAllRequests(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("config/database.db")
 
 	actualRequest, err := sqlite.GetAllRequests()
 	if err != nil {
@@ -119,14 +119,14 @@ func TestGetAllRequests(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualRequest)
 
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}
 }
 
 func TestGetOneRequest(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("config/database.db")
 
 	actualRequest, err := sqlite.GetOneRequest("1")
 	if err != nil {
@@ -135,14 +135,14 @@ func TestGetOneRequest(t *testing.T) {
 
 	assert.Equal(t, expectedRequest, actualRequest)
 
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}
 }
 
 func TestGetRequestByField(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("config/database.db")
 
 	actualRequest, err := sqlite.GetRequestByField("name", "teste")
 	if err != nil {
@@ -153,14 +153,14 @@ func TestGetRequestByField(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualRequest)
 
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}
 }
 
 func TestDeleteOneRequest(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("config/database.db")
 
 	err := sqlite.DeleteOneRequest("1")
 	if err != nil {
@@ -171,7 +171,7 @@ func TestDeleteOneRequest(t *testing.T) {
 
 	assert.Equal(t, "sql: no rows in result set", expectedResult.Error())
 
-	err = os.Remove("database.db")
+	err = os.Remove("config/database.db")
 	if err != nil {
 		t.Errorf("Error deleting test DB - %v", err)
 	}

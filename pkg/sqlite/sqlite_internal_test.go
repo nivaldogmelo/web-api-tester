@@ -3,14 +3,14 @@ package sqlite
 import (
 	"testing"
 
-	c "github.com/nivaldogmelo/web-api-tester/config"
+	c "github.com/nivaldogmelo/web-api-tester/internal/config"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetDB(t *testing.T) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath("../../")
+	viper.AddConfigPath("../../config/")
 	viper.AutomaticEnv()
 	viper.SetConfigType("yaml")
 

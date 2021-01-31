@@ -14,7 +14,7 @@ import (
 
 func getDB() (string, error) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("config/")
 	viper.AutomaticEnv()
 	viper.SetConfigType("yaml")
 
