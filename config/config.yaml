@@ -2,4 +2,4 @@ server:
   port: 3000
 
 database:
-  filename: database.db
+  filename: config/database.db
