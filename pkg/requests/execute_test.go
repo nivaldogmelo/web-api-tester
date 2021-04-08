@@ -9,7 +9,7 @@ import (
 
 func TestExecute(t *testing.T) {
 
-	metrics, err := requests.Execute(exampleRequest)
+	metrics, err := requests.Execute(exampleRequest, 5, 4)
 	if err != nil {
 		t.Errorf("Error executing request - %v ", err)
 	}

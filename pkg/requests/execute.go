@@ -7,11 +7,11 @@ import (
 	vegeta "github.com/tsenart/vegeta/v12/lib"
 )
 
-func Execute(request root.Request) (vegeta.Metrics, error) {
+func Execute(request root.Request, frequency int, testDuration time.Duration) (vegeta.Metrics, error) {
 	headers := transformHeaders(request.Headers)
 
-	rate := vegeta.Rate{Freq: 1, Per: time.Second}
-	duration := 4 * time.Second
+	rate := vegeta.Rate{Freq: frequency, Per: time.Second}
+	duration := testDuration * time.Second
 	targeter := vegeta.NewStaticTargeter(vegeta.Target{
 		Method: request.Method,
 		URL:    request.URL,
