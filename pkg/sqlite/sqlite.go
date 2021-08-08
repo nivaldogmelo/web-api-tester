@@ -25,37 +25,52 @@ func getDB() (string, error) {
 
 	var config c.Config
 	if err := viper.ReadInConfig(); err != nil {
-		error_handler.Print(errors.New("Error reading config file, using default name"))
+		error_handler.Print(errors.New("error reading config file, using default name"))
 		return "database.db", err
 	}
 
 	err := viper.Unmarshal(&config)
 	if err != nil {
-		error_handler.Print(errors.New("Error parsing config file using default name"))
+		error_handler.Print(errors.New("error parsing config file using default name"))
 		return "database.db", err
 	}
 
 	return config.Database.Filename, nil
 }
 
-func InitDB() error {
+func OpenDB() (*sql.DB, error) {
 	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return err
+		error_handler.Print(errors.New("error getting database"))
+		return nil, err
 	}
+
+	database, err := sql.Open("sqlite3", dbFile)
+	if err != nil {
+		error_handler.Print(errors.New("error opening database instance"))
+		return nil, err
+	}
+
+	return database, nil
+}
+
+func InitDB() error {
+	database, err := OpenDB()
+	if err != nil {
+		error_handler.Print(errors.New("error at OpenDB()"))
+	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT, url TEXT)")
 	if err != nil {
-		error_handler.Print(errors.New("Error preparing database query"))
+		error_handler.Print(errors.New("error preparing database query"))
 		return err
 	}
 
 	_, err = statement.Exec()
 	if err != nil {
-		error_handler.Print(errors.New("Error executing database query"))
+		error_handler.Print(errors.New("error executing database query"))
 		return err
 	}
 
@@ -63,29 +78,28 @@ func InitDB() error {
 }
 
 func InsertRequest(request root.Request) error {
-	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
+	database, err := OpenDB()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return err
+		error_handler.Print(errors.New("error at OpenDB()"))
 	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("INSERT INTO requests (name, method, headers, body, url) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
-		error_handler.Print(errors.New("Error inserting new request in database"))
+		error_handler.Print(errors.New("error inserting new request in database"))
 		return err
 	}
 
 	header, err := json.Marshal(request.Headers)
 	if err != nil {
-		error_handler.Print(errors.New("Error parsing JSON from headers"))
+		error_handler.Print(errors.New("error parsing JSON from headers"))
 		return err
 	}
 
 	_, err = statement.Exec(request.Name, request.Method, header, request.Body, request.URL)
 	if err != nil {
-		error_handler.Print(errors.New("Error executing database query"))
+		error_handler.Print(errors.New("error executing database query"))
 		return err
 	}
 
@@ -93,17 +107,16 @@ func InsertRequest(request root.Request) error {
 }
 
 func GetAllRequests() ([]root.Request, error) {
-	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
+	database, err := OpenDB()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return nil, err
+		error_handler.Print(errors.New("error at OpenDB()"))
 	}
+
+	defer database.Close()
 
 	rows, err := database.Query("SELECT * FROM requests")
 	if err != nil {
-		error_handler.Print(errors.New("Error getting requests from database"))
+		error_handler.Print(errors.New("error getting requests from database"))
 		return nil, err
 	}
 
@@ -120,6 +133,9 @@ func GetAllRequests() ([]root.Request, error) {
 
 		var header []root.Header
 		err = json.Unmarshal([]byte(headers), &header)
+		if err != nil {
+			error_handler.Print(errors.New("error building request headers"))
+		}
 
 		temp := root.Request{
 			Name:    name,
@@ -138,17 +154,16 @@ func GetAllRequests() ([]root.Request, error) {
 func GetOneRequest(id string) (root.Request, error) {
 	var request root.Request
 
-	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
+	database, err := OpenDB()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return request, err
+		error_handler.Print(errors.New("error at OpenDB()"))
 	}
+
+	defer database.Close()
 
 	row := database.QueryRow("SELECT name, method, headers, body, url FROM requests WHERE id='" + id + "'")
 	if err != nil {
-		error_handler.Print(errors.New("Error getting request from database"))
+		error_handler.Print(errors.New("error getting request from database"))
 		return request, err
 	}
 
@@ -165,6 +180,9 @@ func GetOneRequest(id string) (root.Request, error) {
 
 	var header []root.Header
 	err = json.Unmarshal([]byte(headers), &header)
+	if err != nil {
+		error_handler.Print(errors.New("error building request headers"))
+	}
 
 	request = root.Request{
 		Name:    name,
@@ -178,17 +196,16 @@ func GetOneRequest(id string) (root.Request, error) {
 }
 
 func GetRequestByField(field string, value string) ([]root.Request, error) {
-	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
+	database, err := OpenDB()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return nil, err
+		error_handler.Print(errors.New("error at OpenDB()"))
 	}
+
+	defer database.Close()
 
 	rows, err := database.Query("SELECT name, method, headers, body, url FROM requests WHERE " + field + "='" + value + "'")
 	if err != nil {
-		error_handler.Print(errors.New("Error getting requests from database"))
+		error_handler.Print(errors.New("error getting requests from database"))
 		return nil, err
 	}
 
@@ -204,6 +221,9 @@ func GetRequestByField(field string, value string) ([]root.Request, error) {
 
 		var header []root.Header
 		err = json.Unmarshal([]byte(headers), &header)
+		if err != nil {
+			error_handler.Print(errors.New("error building request headers"))
+		}
 
 		temp := root.Request{
 			Name:    name,
@@ -220,29 +240,28 @@ func GetRequestByField(field string, value string) ([]root.Request, error) {
 }
 
 func DeleteOneRequest(id string) error {
-	dbFile, err := getDB()
-	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
+	database, err := OpenDB()
 	if err != nil {
-		error_handler.Print(errors.New("Error opening database instance"))
-		return err
+		error_handler.Print(errors.New("error at OpenDB()"))
 	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("DELETE FROM requests WHERE id=?")
 	if err != nil {
-		error_handler.Print(errors.New("Error preparing delete query"))
+		error_handler.Print(errors.New("error preparing delete query"))
 		return err
 	}
 
 	result, err := statement.Exec(id)
 	if err != nil {
-		error_handler.Print(errors.New("Error deleting request from database"))
+		error_handler.Print(errors.New("error deleting request from database"))
 		return err
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		err = errors.New("No request found")
+		err = errors.New("no request found")
 		error_handler.Print(err)
 		return err
 	}

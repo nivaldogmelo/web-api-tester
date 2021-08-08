@@ -16,7 +16,7 @@ func Save(request root.Request) error {
 
 	err = sqlite.InsertRequest(request)
 	if err != nil {
-		error_handler.Print(errors.New("Error saving request"))
+		error_handler.Print(errors.New("error saving request"))
 		return err
 	}
 
@@ -26,7 +26,7 @@ func Save(request root.Request) error {
 func GetAll() ([]root.Request, error) {
 	requests, err := sqlite.GetAllRequests()
 	if err != nil {
-		error_handler.Print(errors.New("Error gettings requests"))
+		error_handler.Print(errors.New("error getting requests"))
 		return nil, err
 	}
 
@@ -48,7 +48,7 @@ func GetOne(id string) (root.Request, error) {
 func DeleteOne(id string) error {
 	err := sqlite.DeleteOneRequest(id)
 	if err != nil {
-		error_handler.Print(errors.New("Error deleting request"))
+		error_handler.Print(errors.New("error deleting request"))
 		return err
 	}
 
