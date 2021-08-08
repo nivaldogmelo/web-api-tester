@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
 	"github.com/nivaldogmelo/web-api-tester/pkg/requests"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func respondWithError(w http.ResponseWriter, code int, msg string) {
@@ -79,6 +81,10 @@ func getOneHandler(w http.ResponseWriter, r *http.Request) {
 
 func Serve(port string) {
 	r := mux.NewRouter()
+
+	prometheus.MustRegister(requests.WebRequests)
+	r.Path("/metrics").Handler(promhttp.Handler())
+
 	r.HandleFunc("/", getAllHandler).Methods("GET")
 	r.HandleFunc("/", saveHandler).Methods("POST")
 	r.HandleFunc("/{id}", getOneHandler).Methods("GET")

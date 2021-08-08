@@ -8,6 +8,7 @@ require (
 	github.com/influxdata/tdigest v0.0.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6
+	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tsenart/vegeta/v12 v12.8.4
