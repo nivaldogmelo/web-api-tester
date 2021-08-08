@@ -39,7 +39,7 @@ func TestHomeHandler(t *testing.T) {
 }
 
 func TestSaveHandler(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	body := strings.NewReader(`{
     "Name": "newTest",
@@ -79,14 +79,14 @@ func TestSaveHandler(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestDeleteOneHandler(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	req, err := http.NewRequest("DELETE", "/1", nil)
 	if err != nil {
@@ -111,14 +111,14 @@ func TestDeleteOneHandler(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestGetOneHandler(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	req, err := http.NewRequest("GET", "/1", nil)
 	if err != nil {
@@ -143,14 +143,14 @@ func TestGetOneHandler(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestGetAllHandler(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
@@ -174,7 +174,7 @@ func TestGetAllHandler(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
@@ -195,10 +195,11 @@ var exampleRequest = root.Request{
 
 func initDatabaseForTests(dbFile string) {
 	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT, url TEXT)")
 	if err != nil {

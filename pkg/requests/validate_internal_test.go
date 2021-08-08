@@ -25,13 +25,13 @@ var request = root.Request{
 }
 
 func TestCheckIfDuplicated(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	result := checkIfDuplicated(request)
 
 	assert.Equal(t, "Request already exists", result.Error())
 
-	err := os.Remove("database.db")
+	err := os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
@@ -39,10 +39,11 @@ func TestCheckIfDuplicated(t *testing.T) {
 
 func initDatabaseForTests(dbFile string) {
 	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT, url TEXT)")
 	if err != nil {
