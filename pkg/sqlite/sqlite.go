@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"flag"
 
 	_ "github.com/mattn/go-sqlite3"
 	c "github.com/nivaldogmelo/web-api-tester/internal/config"
@@ -13,6 +14,10 @@ import (
 )
 
 func getDB() (string, error) {
+	if flag.Lookup("test.v") != nil {
+		return "test_database.db", nil
+	}
+
 	viper.SetConfigName("config")
 	viper.AddConfigPath("config/")
 	viper.AutomaticEnv()

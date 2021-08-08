@@ -26,7 +26,7 @@ var exampleRequest = root.Request{
 }
 
 func TestSave(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	newRequest := root.Request{
 		Name:   "request",
@@ -46,14 +46,14 @@ func TestSave(t *testing.T) {
 		t.Errorf("Error saving request - %v", err)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestGetAll(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	expectedResult := []root.Request{exampleRequest}
 
@@ -64,14 +64,14 @@ func TestGetAll(t *testing.T) {
 
 	assert.Equal(t, expectedResult, actualResult)
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestGetOne(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	actualResult, err := requests.GetOne("1")
 	if err != nil {
@@ -80,21 +80,21 @@ func TestGetOne(t *testing.T) {
 
 	assert.Equal(t, exampleRequest, actualResult)
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
 }
 
 func TestDeleteOne(t *testing.T) {
-	initDatabaseForTests("database.db")
+	initDatabaseForTests("test_database.db")
 
 	err := requests.DeleteOne("1")
 	if err != nil {
 		t.Errorf("Error deleting request - %v", err)
 	}
 
-	err = os.Remove("database.db")
+	err = os.Remove("test_database.db")
 	if err != nil {
 		t.Errorf("Error deleting created DB - %v", err)
 	}
@@ -102,10 +102,11 @@ func TestDeleteOne(t *testing.T) {
 
 func initDatabaseForTests(dbFile string) {
 	database, err := sql.Open("sqlite3", dbFile)
-	defer database.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer database.Close()
 
 	statement, err := database.Prepare("CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, name TEXT, method TEXT, headers TEXT, body TEXT, url TEXT)")
 	if err != nil {
