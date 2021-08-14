@@ -8,6 +8,7 @@ import (
 
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
 	error_handler "github.com/nivaldogmelo/web-api-tester/pkg/error"
+	"github.com/tcnksm/go-httpstat"
 	vegeta "github.com/tsenart/vegeta/v12/lib"
 )
 
@@ -23,6 +24,10 @@ func ExecuteRequest(request root.Request) (int, error) {
 	}
 
 	httpRequest.Header = headers
+
+	var result httpstat.Result
+	ctx := httpstat.WithHTTPStat(httpRequest.Context(), &result)
+	httpRequest = httpRequest.WithContext(ctx)
 
 	response, err := client.Do(httpRequest)
 	if err != nil {
