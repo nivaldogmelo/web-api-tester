@@ -8,7 +8,6 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-
 	metrics, err := requests.Load(exampleRequest, 5, 4)
 	if err != nil {
 		t.Errorf("Error executing request - %v ", err)
