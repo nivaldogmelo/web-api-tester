@@ -7,9 +7,9 @@ import (
 	"github.com/nivaldogmelo/web-api-tester/pkg/requests"
 )
 
-func TestExecute(t *testing.T) {
+func TestLoad(t *testing.T) {
 
-	metrics, err := requests.Execute(exampleRequest, 5, 4)
+	metrics, err := requests.Load(exampleRequest, 5, 4)
 	if err != nil {
 		t.Errorf("Error executing request - %v ", err)
 	}

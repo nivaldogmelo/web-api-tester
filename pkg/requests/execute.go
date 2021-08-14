@@ -7,7 +7,7 @@ import (
 	vegeta "github.com/tsenart/vegeta/v12/lib"
 )
 
-func Execute(request root.Request, frequency int, testDuration time.Duration) (vegeta.Metrics, error) {
+func Load(request root.Request, frequency int, testDuration time.Duration) (vegeta.Metrics, error) {
 	headers := transformHeaders(request.Headers)
 
 	rate := vegeta.Rate{Freq: frequency, Per: time.Second}
