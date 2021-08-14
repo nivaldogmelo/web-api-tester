@@ -3,6 +3,7 @@ package requests
 import (
 	"bytes"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/nivaldogmelo/web-api-tester/internal/root"
@@ -28,6 +29,8 @@ func ExecuteRequest(request root.Request) (int, error) {
 		error_handler.Print(err)
 		return response.StatusCode, err
 	}
+
+	CountWebRequests(request.Name, strconv.Itoa(response.StatusCode))
 
 	return response.StatusCode, nil
 }
