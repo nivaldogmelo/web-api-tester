@@ -31,8 +31,15 @@ func ExecuteRequest(request root.Request) (int, error) {
 
 	response, err := client.Do(httpRequest)
 	if err != nil {
-		error_handler.Print(err)
-		return response.StatusCode, err
+		if response == nil {
+			end := time.Now()
+			CountWebRequests(request.Name, strconv.Itoa(http.StatusBadGateway), result.Total(end))
+			return http.StatusBadGateway, err
+		} else {
+			end := time.Now()
+			CountWebRequests(request.Name, strconv.Itoa(response.StatusCode), result.Total(end))
+			return response.StatusCode, err
+		}
 	}
 
 	end := time.Now()
