@@ -19,13 +19,13 @@ func main() {
 
 	var config c.Config
 	if err := viper.ReadInConfig(); err != nil {
-		error_handler.Print(errors.New("Error reading config file, using default name"))
+		error_handler.Print(errors.New("error reading config file, using default name"))
 		log.Fatal(err)
 	}
 
 	err := viper.Unmarshal(&config)
 	if err != nil {
-		error_handler.Print(errors.New("Error parsing config file using default name"))
+		error_handler.Print(errors.New("error parsing config file using default name"))
 		log.Fatal(err)
 	}
 
