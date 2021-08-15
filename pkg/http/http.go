@@ -83,6 +83,8 @@ func Serve(port string) {
 	r := mux.NewRouter()
 
 	prometheus.MustRegister(requests.WebRequests)
+	prometheus.MustRegister(requests.WebRequestsLatency)
+
 	r.Path("/metrics").Handler(promhttp.Handler())
 
 	r.HandleFunc("/", getAllHandler).Methods("GET")

@@ -35,7 +35,8 @@ func ExecuteRequest(request root.Request) (int, error) {
 		return response.StatusCode, err
 	}
 
-	CountWebRequests(request.Name, strconv.Itoa(response.StatusCode))
+	end := time.Now()
+	CountWebRequests(request.Name, strconv.Itoa(response.StatusCode), result.Total(end))
 
 	return response.StatusCode, nil
 }
