@@ -92,5 +92,7 @@ func Serve(port string) {
 	r.HandleFunc("/{id}", getOneHandler).Methods("GET")
 	r.HandleFunc("/{id}", deleteOneHandler).Methods("DELETE")
 
+	go routine()
+
 	log.Fatal(http.ListenAndServe(port, r))
 }
