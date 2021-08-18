@@ -4,6 +4,38 @@ Web API Tester is a tool that can be used to test multiples web applications. In
 ## :warning: Disclaimer :warning:
 Please be careful to not use this against application tat you do not have a permission to do so. Since it can be used to simulate many requests or trigger a sensive operation at the target.
 
+## Usage
+To register requests you'll need to make a http requests as the one below
+```json
+# http://<url>:<port>/
+# Method: POST
+{
+  "Name":  "myServer",
+  "Method":  "GET",
+  "Headers":  [
+    {
+      "Header":  "Content-Type",
+      "Content":  "application/json"
+    }
+  ],
+  "Body":  "",
+  "URL":  "http://myserver:3000/"
+}
+```
+Then the app will it include in the next round of tests. The application will export metrics about the tests in the Prometheus format at `/metrics` as below
+```
+# HELP web_requests_latency Latency of registered web requests
+# TYPE web_requests_latency summary
+web_requests_latency{code="200",name="myServer",quantile="0.5"} 0.002459737
+web_requests_latency{code="200",name="myServer",quantile="0.9"} 0.005159327
+web_requests_latency{code="200",name="myServer",quantile="0.99"} 0.005159327
+web_requests_latency_sum{code="200",name="myServer"} 0.027415872
+web_requests_latency_count{code="200",name="myServer"} 8
+# HELP web_requests_total How many registered web requests were made, partitioned by name and result
+# TYPE web_requests_total counter
+web_requests_total{code="200",name="myServer"} 8
+```
+
 ## Run
 To run the application you have to follow these steps:
 
